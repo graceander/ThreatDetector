@@ -20,7 +20,7 @@ My system addresses the need for a unified solution that can detect and categori
 # Features
 
 * IP Address Collection: Gathers and stores IP addresses from network traffic or databases.
-* Threat Analysis: Utilizes API integration (VirusTotal or AbuseIPDB) to analyze collected IP addresses.
+* Threat Analysis: Utilizes API integration (AbuseIPDB) to analyze collected IP addresses.
 * Multi-Category Classification: Classifies threats into various categories including malware, phishing, SQL injection, and more.
 * Risk Assessment: Categorizes threats by risk level (low, medium, high, severe).
 * Alert System: Triggers alerts based on the type and severity of detected threats.
