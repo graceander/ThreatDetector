@@ -26,8 +26,7 @@ def main():
         for key, value in data.items():
             print(f"  {key}: {value}")
         
-        print("---")
+        print("-------------------------------------------------")
 
 if __name__ == "__main__":
     main()
-    
