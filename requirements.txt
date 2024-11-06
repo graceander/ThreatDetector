@@ -8,3 +8,6 @@ python-dotenv==1.0.1
 requests==2.32.3
 six @ file:///System/Volumes/Data/SWE/Apps/DT/BuildRoots/BuildRoot7/ActiveBuildRoot/Library/Caches/com.apple.xbs/Sources/python3/python3-133.100.1.1/six-1.15.0-py2.py3-none-any.whl
 urllib3==2.2.2
+
+requests==2.31.0
+python-dotenv==1.0.0
