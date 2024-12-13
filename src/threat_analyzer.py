@@ -1,5 +1,3 @@
-# threat_analyzer.py
-
 from enum import Enum
 from dataclasses import dataclass
 from typing import List, Dict, Optional
@@ -14,7 +12,7 @@ class ThreatType(Enum):
     INSIDER_THREAT = "Insider Threat"
     CRYPTOJACKING = "Cryptojacking"
     SOCIAL_ENGINEERING = "Social Engineering"
-    SSH_ABUSE = "SSH Abuse"  # Added this enum value
+    SSH_ABUSE = "SSH Abuse"
     UNKNOWN = "Unknown"
 
 class RiskLevel(Enum):
@@ -98,7 +96,8 @@ class ThreatAnalyzer:
         categories = data.get('reports', [{}])[0].get('categories', []) if data.get('reports') else []
         
         # Determine threat type and risk level
-        threat_type = self._determine_threat_type(categories)
+        threat_type = self._determine_threat_type(all_categories)
+        print(f"Determined threat type: {threat_type}")
         risk_level = self._determine_risk_level(confidence_score, total_reports)
         
         # Create description
