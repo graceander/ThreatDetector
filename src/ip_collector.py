@@ -13,6 +13,10 @@ class IPCollector:
         else:
             print("Error fetching blacklist from AbuseIPDB")
 
+    def get_ip_details(self, ip_address: str) -> dict:
+        """Get detailed information for a single IP address."""
+        return self.api_handler.check_ip(ip_address, max_age_in_days=30, verbose=True)
+
     def get_collected_ips(self):
         """Return the list of collected IP addresses."""
         return self.ip_addresses
