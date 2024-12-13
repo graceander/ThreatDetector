@@ -33,25 +33,28 @@ class ThreatInfo:
 class ThreatAnalyzer:
     def __init__(self):
         self.threat_mappings = {
-            # AbuseIPDB category mappings to our threat types
-            3: ThreatType.MALWARE,  # Fraud Orders
-            4: ThreatType.PASSWORD_ATTACK,  # DDoS
-            5: ThreatType.DENIAL_OF_SERVICE,  # FTP Brute-Force
-            6: ThreatType.PHISHING,  # Ping of Death
-            7: ThreatType.PHISHING,  # Phishing
-            8: ThreatType.SQL_INJECTION,  # SQL Injection
-            9: ThreatType.SSH_ABUSE,  # SSH abuse
+            1: ThreatType.DENIAL_OF_SERVICE,  # DNS Compromise
+            2: ThreatType.MALWARE,           # DNS Poisoning
+            3: ThreatType.MALWARE,           # Fraud Orders
+            4: ThreatType.DENIAL_OF_SERVICE, # DDoS
+            5: ThreatType.PASSWORD_ATTACK,   # FTP Brute-Force
+            6: ThreatType.DENIAL_OF_SERVICE, # Ping of Death
+            7: ThreatType.PHISHING,          # Phishing
+            8: ThreatType.SQL_INJECTION,     # SQL Injection
+            9: ThreatType.SSH_ABUSE,         # SSH abuse
             10: ThreatType.SOCIAL_ENGINEERING,  # Email Spam
-            11: ThreatType.PASSWORD_ATTACK,  # Bad Web Bot
-            14: ThreatType.CRYPTOJACKING,  # Port Scan
-            15: ThreatType.DENIAL_OF_SERVICE,  # Hacking
+            11: ThreatType.PASSWORD_ATTACK,    # Bad Web Bot
+            13: ThreatType.MALWARE,            # Malware
+            14: ThreatType.CRYPTOJACKING,      # Port Scan
+            15: ThreatType.INSIDER_THREAT,     # Hacking
             16: ThreatType.MAN_IN_THE_MIDDLE,  # Web Spam
-            18: ThreatType.MALWARE,  # Brute-Force
-            19: ThreatType.SQL_INJECTION,  # Bad Web Bot
-            20: ThreatType.CRYPTOJACKING,  # Exploited Host
-            21: ThreatType.SOCIAL_ENGINEERING,  # Web App Attack
-            22: ThreatType.SSH_ABUSE,  # SSH
-            23: ThreatType.INSIDER_THREAT  # IoT Targeted
+            17: ThreatType.MALWARE,            # Email Spam
+            18: ThreatType.PASSWORD_ATTACK,    # Brute-Force
+            19: ThreatType.SQL_INJECTION,      # Bad Web Bot
+            20: ThreatType.MALWARE,            # Exploited Host
+            21: ThreatType.SQL_INJECTION,      # Web App Attack
+            22: ThreatType.SSH_ABUSE,          # SSH
+            23: ThreatType.INSIDER_THREAT      # IoT Targeted
         }
 
     def _determine_risk_level(self, confidence_score: int, attack_count: int) -> RiskLevel:
@@ -80,6 +83,14 @@ class ThreatAnalyzer:
             threat_type = self.threat_mappings.get(category, ThreatType.UNKNOWN)
             threat_type_counts[threat_type] = threat_type_counts.get(threat_type, 0) + 1
         
+        # If we only found unknown threats, return UNKNOWN
+        if len(threat_type_counts) == 1 and ThreatType.UNKNOWN in threat_type_counts:
+            return ThreatType.UNKNOWN
+            
+        # Filter out UNKNOWN if we have other threat types
+        if len(threat_type_counts) > 1 and ThreatType.UNKNOWN in threat_type_counts:
+            del threat_type_counts[ThreatType.UNKNOWN]
+            
         # Return the most common threat type
         return max(threat_type_counts.items(), key=lambda x: x[1])[0]
 
@@ -93,7 +104,19 @@ class ThreatAnalyzer:
         ip_address = data.get('ipAddress', '')
         confidence_score = data.get('abuseConfidenceScore', 0)
         total_reports = data.get('totalReports', 0)
-        categories = data.get('reports', [{}])[0].get('categories', []) if data.get('reports') else []
+        
+        # Get all reports and their categories
+        reports = data.get('reports', [])
+        print(f"Number of reports found: {len(reports)}")
+        
+        all_categories = []
+        for report in reports:
+            if isinstance(report, dict):
+                categories = report.get('categories', [])
+                all_categories.extend(categories)
+                print(f"Categories found in report: {categories}")
+        
+        print(f"All categories collected: {all_categories}")
         
         # Determine threat type and risk level
         threat_type = self._determine_threat_type(all_categories)
@@ -104,6 +127,8 @@ class ThreatAnalyzer:
         description = f"IP Address {ip_address} has been reported {total_reports} times "
         description += f"with a confidence score of {confidence_score}%. "
         description += f"Primary threat type: {threat_type.value}"
+        
+        print(f"Final threat type: {threat_type.value}")
 
         return ThreatInfo(
             ip_address=ip_address,
